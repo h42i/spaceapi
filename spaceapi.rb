@@ -47,6 +47,8 @@ def generate_non_static(hash)
   rescue
     hash['state']['open'] = false
   end
+  
+  hash['open'] = hash['state']['open']
 end
 
 def put_key(hash, key, value)
