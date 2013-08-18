@@ -45,7 +45,7 @@ def generate_non_static(hash)
   end
   
   begin
-    url = URI.parse('http://www.stats.l3kn.de/api/bool')
+    url = URI.parse('http://stats.l3kn.de/api/bool')
     request = Net::HTTP::Get.new(url.path)
     response = Net::HTTP.start(url.host, url.port) { |http|
       http.request(request)
