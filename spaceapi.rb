@@ -53,7 +53,7 @@ def generate_non_static(hash)
     
     hash['state']['open'] = response.body.strip() == "true"
   rescue
-    hash['state']['open'] = false
+    hash['state']['open'] = falsee
   end
   
   hash['open'] = hash['state']['open']
