@@ -40,6 +40,30 @@ get '/set_open/:argument' do
   end
 end
 
+get '/set_temp/:argument' do
+  begin
+    temp_state = params[:argument]
+
+    temp = File.open("special/temp", "w")
+    temp.write(temp_state)
+    temp.close
+  rescue
+    # bad.
+  end
+end
+
+get '/set_pres/:argument' do
+  begin
+    pres_state = params[:argument]
+
+    pres = File.open("special/pres", "w")
+    pres.write(pres_state)
+    pres.close
+  rescue
+    # bad.
+  end
+end
+
 def generate_json
   root = Hash.new
   
@@ -66,6 +90,23 @@ def generate_static(hash, dir)
 end
 
 def generate_non_static(hash)
+  hash['sensors'] = Hash.new
+  
+  room_temp = Hash.new
+  
+  room_temp['value'] = File.read("special/temp").to_f
+  room_temp['unit'] = '°C'
+  room_temp['location'] = 'Inside'
+  
+  hash['sensors']['temperature'] = [ room_temp ]
+  
+  room_pres = Hash.new
+  
+  room_pres['value'] = File.read("special/pres").to_f
+  room_pres['unit'] = 'hPa'
+  room_pres['location'] = 'Inside'
+  
+  hash['sensors']['barometer'] = [ room_pres ]
 end
 
 def put_key(hash, key, value)
