@@ -17,23 +17,13 @@ get '/set_open/:argument' do
     open_state = params[:argument]
 
     if open_state == "true"
-      open_one = File.open("space/state/open.boolean", "w")
-      open_two = File.open("space/open.boolean", "w")
-
-      open_one.write("true")
-      open_two.write("true")
-
-      open_one.close
-      open_two.close
+      open = File.open("special/open", "w")
+      open.write("true")
+      open.close
     else
-      open_one = File.open("space/state/open.boolean", "w")
-      open_two = File.open("space/open.boolean", "w")
-
-      open_one.write("false")
-      open_two.write("false")
-
-      open_one.close
-      open_two.close
+      open = File.open("special/open", "w")
+      open.write("false")
+      open.close
     end
   rescue
     # bad.
@@ -59,6 +49,18 @@ get '/set_pres/:argument' do
     pres = File.open("special/pres", "w")
     pres.write(pres_state)
     pres.close
+  rescue
+    # bad.
+  end
+end
+
+get '/set_rad/:argument' do
+  begin
+    rad_state = params[:argument]
+
+    rad = File.open("special/rad", "w")
+    rad.write(rad_state)
+    rad.close
   rescue
     # bad.
   end
@@ -90,6 +92,11 @@ def generate_static(hash, dir)
 end
 
 def generate_non_static(hash)
+  hash['open'] = File.read("special/open") == "true"
+
+  hash['state'] = Hash.new
+  hash['state']['open'] = hash['open']
+  
   hash['sensors'] = Hash.new
   
   room_temp = Hash.new
@@ -107,6 +114,15 @@ def generate_non_static(hash)
   room_pres['location'] = 'Inside'
   
   hash['sensors']['barometer'] = [ room_pres ]
+
+  room_rad = Hash.new
+
+  room_rad['value'] = File.read("special/rad").to_f
+  room_rad['unit'] = 'µSv/h'
+  room_rad['location'] = 'Inside'
+
+  hash['sensors']['radiation'] = Hash.new
+  hash['sensors']['radiation']['beta_gamma'] = [ room_rad ]
 end
 
 def put_key(hash, key, value)
